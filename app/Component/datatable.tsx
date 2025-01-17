@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import { useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -9,80 +9,90 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { ArrowUpDown, Bell, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, LogOut } from 'lucide-react'
-import type { Domain } from '@/lib/data'
-import { ModeToggle } from '@/components/theme'
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  ArrowUpDown,
+  Bell,
+  ChevronFirst,
+  ChevronLast,
+  ChevronLeft,
+  ChevronRight,
+  LogOut,
+} from "lucide-react";
+import type { Domain } from "@/lib/data";
+import { ModeToggle } from "@/components/theme";
 
 interface DataTableProps {
-  data: Domain[]
+  data: Domain[];
 }
 
-const PAGE_SIZE = 10
+const PAGE_SIZE = 10;
 
 export function DataTable({ data }: DataTableProps) {
-  const router = useRouter()
+  const router = useRouter();
   const [sortConfig, setSortConfig] = useState<{
-    key: keyof Domain
-    direction: 'asc' | 'desc'
-  } | null>(null)
-  const [filter, setFilter] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
+    key: keyof Domain;
+    direction: "asc" | "desc";
+  } | null>(null);
+  const [filter, setFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filteredData = useMemo(() => {
-    return data.filter(domain =>
-      Object.values(domain).some(value => 
+    return data.filter((domain) =>
+      Object.values(domain).some((value) =>
         String(value).toLowerCase().includes(filter.toLowerCase())
       )
-    )
-  }, [data, filter])
+    );
+  }, [data, filter]);
 
   const sortedData = useMemo(() => {
-    let sortableItems = [...filteredData]
+    let sortableItems = [...filteredData];
     if (sortConfig !== null) {
       sortableItems.sort((a, b) => {
-        const aValue = a[sortConfig.key]
-        const bValue = b[sortConfig.key]
-        if (typeof aValue === 'number' && typeof bValue === 'number') {
-          return sortConfig.direction === 'asc' ? aValue - bValue : bValue - aValue
+        const aValue = a[sortConfig.key];
+        const bValue = b[sortConfig.key];
+        if (typeof aValue === "number" && typeof bValue === "number") {
+          return sortConfig.direction === "asc"
+            ? aValue - bValue
+            : bValue - aValue;
         }
-        const aString = String(aValue).toLowerCase()
-        const bString = String(bValue).toLowerCase()
-        return sortConfig.direction === 'asc'
+        const aString = String(aValue).toLowerCase();
+        const bString = String(bValue).toLowerCase();
+        return sortConfig.direction === "asc"
           ? aString.localeCompare(bString)
-          : bString.localeCompare(aString)
-      })
+          : bString.localeCompare(aString);
+      });
     }
-    return sortableItems
-  }, [filteredData, sortConfig])
+    return sortableItems;
+  }, [filteredData, sortConfig]);
 
   const paginatedData = useMemo(() => {
-    const startIndex = (currentPage - 1) * PAGE_SIZE
-    return sortedData.slice(startIndex, startIndex + PAGE_SIZE)
-  }, [sortedData, currentPage])
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    return sortedData.slice(startIndex, startIndex + PAGE_SIZE);
+  }, [sortedData, currentPage]);
 
-  const totalPages = Math.ceil(sortedData.length / PAGE_SIZE)
+  const totalPages = Math.ceil(sortedData.length / PAGE_SIZE);
 
   const toggleSort = (key: keyof Domain) => {
-    setSortConfig(current => ({
+    setSortConfig((current) => ({
       key,
       direction:
-        current?.key === key && current.direction === 'asc' ? 'desc' : 'asc',
-    }))
-  }
+        current?.key === key && current.direction === "asc" ? "desc" : "asc",
+    }));
+  };
 
   return (
     <div className="flex flex-col min-h-screen max-w-full">
       <div className="flex justify-between items-center p-4 md:p-6 border-b">
         <h1 className="text-xl md:text-2xl font-bold">Domain Data</h1>
-        <div className='flex items-center gap-2 md:gap-4'>
+        <div className="flex items-center gap-2 md:gap-4">
           <ModeToggle />
           <Bell className="h-5 w-5 md:h-6 md:w-6 cursor-pointer" />
-          <Button 
-            variant="destructive" 
-            onClick={() => router.push('/')}
+          <Button
+            variant="destructive"
+            onClick={() => router.push("/")}
             className="flex items-center gap-2 text-sm md:text-base"
           >
             <LogOut className="h-4 w-4" />
@@ -90,7 +100,7 @@ export function DataTable({ data }: DataTableProps) {
           </Button>
         </div>
       </div>
-      
+
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 md:p-6">
         <Input
           placeholder="Search..."
@@ -111,7 +121,7 @@ export function DataTable({ data }: DataTableProps) {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setCurrentPage(page => Math.max(1, page - 1))}
+            onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
             disabled={currentPage === 1}
             className="hover:bg-gray-100 dark:hover:bg-gray-800"
           >
@@ -123,7 +133,9 @@ export function DataTable({ data }: DataTableProps) {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}
+            onClick={() =>
+              setCurrentPage((page) => Math.min(totalPages, page + 1))
+            }
             disabled={currentPage === totalPages}
             className="hover:bg-gray-100 dark:hover:bg-gray-800"
           >
@@ -147,8 +159,8 @@ export function DataTable({ data }: DataTableProps) {
             <TableHeader>
               <TableRow>
                 {Object.keys(data[0] || {}).map((key) => (
-                  <TableHead 
-                    key={key} 
+                  <TableHead
+                    key={key}
                     className="bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-100 whitespace-nowrap"
                   >
                     <Button
@@ -156,7 +168,11 @@ export function DataTable({ data }: DataTableProps) {
                       onClick={() => toggleSort(key as keyof Domain)}
                       className="font-bold hover:bg-gray-200 dark:hover:bg-gray-700"
                     >
-                      {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1').trim()}
+                      {key.charAt(0).toUpperCase() +
+                        key
+                          .slice(1)
+                          .replace(/([A-Z])/g, " $1")
+                          .trim()}
                       <ArrowUpDown className="ml-2 h-4 w-4" />
                     </Button>
                   </TableHead>
@@ -167,9 +183,9 @@ export function DataTable({ data }: DataTableProps) {
               {paginatedData.map((domain, index) => (
                 <TableRow key={index}>
                   {Object.values(domain).map((value, valueIndex) => (
-                    <TableCell 
+                    <TableCell
                       key={valueIndex}
-                      className="whitespace-nowrap"
+                      className="whitespace-nowrap text-center"
                     >
                       {value}
                     </TableCell>
@@ -181,6 +197,5 @@ export function DataTable({ data }: DataTableProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
-
